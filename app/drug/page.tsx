@@ -2,15 +2,22 @@
 
 import Link from "next/link";
 import { ArrowLeft, Beaker } from "lucide-react";
+import { useState } from "react";
+import { searchDrugs } from "../data/pipeline";
+import type { DrugProfile } from "../data/types";
 
 export default function DrugPortal() {
-  const drugs = ["Metformin", "Sildenafil", "Rapamycin", "Thalidomide"];
+  const [query, setQuery] = useState("");
+
+  const drugs: DrugProfile[] = searchDrugs(query);
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-navy-900 via-black to-black">
+      {/* Background glow */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.24),_transparent_55%)] opacity-60" />
 
       <div className="relative mx-auto max-w-6xl px-6 py-24">
+        {/* Back link */}
         <Link
           href="/"
           className="mb-10 inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.22em] text-slate-500 transition-colors hover:text-teal-300"
@@ -18,93 +25,105 @@ export default function DrugPortal() {
           <ArrowLeft size={14} /> Back to overview
         </Link>
 
-        <div className="mb-10 flex flex-col justify-between gap-8 md:mb-14 md:flex-row md:items-end">
-          <div>
-            <p className="text-[11px] font-mono uppercase tracking-[0.24em] text-teal-300/90">
-              Drug-centric intelligence
-            </p>
-            <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-50 md:text-4xl">
-              Prioritise compounds for repositioning with real-world signal.
-            </h1>
-            <p className="mt-4 max-w-xl text-sm leading-relaxed text-slate-400">
-              Explore a structured view of approved, experimental, and shelved
-              molecules. Each row can expand into indications, outcomes, and
-              mechanistic rationale.
-            </p>
-          </div>
+        {/* Header */}
+        <div className="mb-10 flex flex-col gap-6">
+          <p className="text-[11px] font-mono uppercase tracking-[0.24em] text-teal-300/90">
+            Drug-centric evidence
+          </p>
 
-          <div className="flex gap-6 text-[11px] text-slate-400">
-            <div className="flex flex-col border-l border-slate-800 pl-4">
-              <span className="font-mono uppercase tracking-[0.22em] text-slate-500">
-                Mode
-              </span>
-              <span className="mt-2 rounded-full bg-slate-900/80 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.22em] text-teal-300">
-                Discovery · Repurposing
-              </span>
-            </div>
-            <div className="hidden flex-col border-l border-slate-800 pl-4 md:flex">
-              <span className="font-mono uppercase tracking-[0.22em] text-slate-500">
-                View
-              </span>
-              <span className="mt-2 text-sm text-slate-200">
-                Ranked by opportunity / risk
-              </span>
-            </div>
-          </div>
+          <h1 className="text-3xl font-semibold tracking-tight text-slate-50 md:text-4xl">
+            Explore candidate compounds and supporting evidence
+          </h1>
+
+          <p className="max-w-xl text-sm leading-relaxed text-slate-400">
+            This prototype demonstrates how approved, supportive, and
+            investigational evidence can be structured for rapid review.
+          </p>
+
+          <p className="text-xs text-slate-500 max-w-xl">
+            Prototype view. Drug list and evidence signals are manually curated
+            and incomplete.
+          </p>
         </div>
 
+        {/* Search */}
+        <div className="mb-8 max-w-md">
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search drug (e.g. Metformin)"
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/80 px-4 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-400"
+          />
+        </div>
+
+        {/* Table */}
         <div className="overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-950/60 shadow-[0_26px_90px_rgba(15,23,42,0.9)]">
+          {/* Table header */}
           <div className="grid grid-cols-[1.2fr,1fr,1fr,0.8fr] gap-4 border-b border-slate-800/80 bg-slate-900/80 px-6 py-3 text-[11px] font-mono uppercase tracking-[0.2em] text-slate-400">
             <span>Compound</span>
             <span>Primary indication</span>
-            <span>Repurposing signal</span>
+            <span>Evidence signal</span>
             <span className="text-right">Profile</span>
           </div>
 
+          {/* Rows */}
           <div className="divide-y divide-slate-900/80">
-            {drugs.map((d, idx) => (
+            {drugs.map((drug, idx) => (
               <div
-                key={d}
+                key={drug.id}
                 className="grid grid-cols-[1.2fr,1fr,1fr,0.8fr] items-center gap-4 px-6 py-4 hover:bg-slate-900/60"
               >
+                {/* Drug name */}
                 <div className="flex items-center gap-3">
                   <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900 text-teal-300 ring-1 ring-slate-700/80">
                     <Beaker size={16} />
                   </div>
                   <div className="flex flex-col">
                     <span className="text-sm font-medium text-slate-50">
-                      {d}
+                      {drug.name}
                     </span>
                     <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-slate-500">
-                      Tier {idx + 1} · Shortlist
+                      Curated · Evidence-backed
                     </span>
                   </div>
                 </div>
 
+                {/* Indication */}
                 <div className="text-sm text-slate-300">
-                  {idx === 0 && "Type 2 diabetes"}
-                  {idx === 1 && "Pulmonary arterial hypertension"}
-                  {idx === 2 && "Oncology (multiple)"}
-                  {idx === 3 && "Multiple myeloma"}
+                  {drug.approvedUses[0]}
                 </div>
 
+                {/* Evidence signal */}
                 <div className="flex items-center gap-3 text-xs text-slate-300">
                   <div className="flex h-6 items-center gap-1 rounded-full bg-slate-900/80 px-2 text-[10px] font-mono uppercase tracking-[0.2em] text-teal-300">
                     <span className="h-1.5 w-1.5 rounded-full bg-teal-400" />
-                    High signal
+                    {drug.evidence.length} {drug.evidence.length === 1 ? "record" : "records"}
                   </div>
                   <span className="hidden text-slate-500 md:inline">
-                    Real-world outcomes + omics
+                    {drug.evidence.filter((e) => e.tier === "Approved").length > 0 && "Approved · "}
+                    {drug.evidence.filter((e) => e.tier === "Supportive").length > 0 && "Supportive · "}
+                    {drug.evidence.filter((e) => e.tier === "Investigational").length > 0 && "Investigational"}
                   </span>
                 </div>
 
+                {/* Profile link */}
                 <div className="flex justify-end">
-                  <button className="rounded-full bg-slate-900 px-3 py-1 text-[11px] font-mono uppercase tracking-[0.22em] text-slate-200 ring-1 ring-slate-700/80 hover:bg-slate-800 hover:text-teal-200">
+                  <Link
+                    href={`/drug/${drug.id}`}
+                    className="rounded-full bg-slate-900 px-3 py-1 text-[11px] font-mono uppercase tracking-[0.22em] text-slate-200 ring-1 ring-slate-700/80 hover:bg-slate-800 hover:text-teal-200"
+                  >
                     Open profile →
-                  </button>
+                  </Link>
                 </div>
               </div>
             ))}
+
+            {drugs.length === 0 && (
+              <div className="px-6 py-10 text-sm text-slate-500">
+                No drugs match your search.
+              </div>
+            )}
           </div>
         </div>
       </div>
