@@ -1,8 +1,11 @@
-import { Drug } from "./types";
+// app/data/normalize.ts
+
+import { NormalizedDrug } from "./types";
 import { fetchPubMedRepurposing } from "./sources/pubmed";
 import { fetchDrugBankTargets } from "./sources/drugbank";
 
-export function normalizeDrugData(): Drug[] {
+
+export function normalizeDrugData(): NormalizedDrug[] {
   const pubmed = fetchPubMedRepurposing();
   const targets = fetchDrugBankTargets();
 
@@ -13,19 +16,7 @@ export function normalizeDrugData(): Drug[] {
       originalIndication: "Type 2 Diabetes Mellitus",
       mechanism:
         "Activation of AMPK leading to reduced hepatic gluconeogenesis",
-      repurposedIndications: pubmed.map((p) => ({
-        disease: p.disease,
-        rationale: p.rationale,
-        evidenceLevel: "Preclinical + Observational",
-        sources: [
-          {
-            name: "PubMed",
-            year: p.year,
-          },
-        ],
-      })),
-      targets: targets["Metformin"],
-      lastUpdated: "2024-11",
+      repurposedIndications: pubmed.map((p) => p.disease),
     },
   ];
 }
