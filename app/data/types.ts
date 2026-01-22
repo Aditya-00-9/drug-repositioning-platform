@@ -1,5 +1,6 @@
+// app/data/types.ts
+
 export type EvidenceTier = "Approved" | "Supportive" | "Investigational";
-export type Drug = DrugProfile;
 
 export type EvidenceRecord = {
   title: string;
@@ -10,6 +11,10 @@ export type EvidenceRecord = {
   notes?: string;
 };
 
+/**
+ * Final UI / API model
+ * This is what pages and components consume
+ */
 export type DrugProfile = {
   id: string;
   name: string;
@@ -17,4 +22,16 @@ export type DrugProfile = {
   evidence: EvidenceRecord[];
   summary: string;
   lastUpdated: string;
+};
+
+/**
+ * Internal pipeline model
+ * This is what data normalization produces
+ */
+export type NormalizedDrug = {
+  id: string;
+  name: string;
+  originalIndication: string;
+  mechanism: string;
+  repurposedIndications: string[];
 };
