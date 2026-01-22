@@ -1,4 +1,5 @@
 export type EvidenceTier = "Approved" | "Supportive" | "Investigational";
+export type Drug = DrugProfile;
 
 export type EvidenceRecord = {
   title: string;
