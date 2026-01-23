@@ -16,7 +16,7 @@ export default function DrugPortal() {
       {/* Background glow */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.24),_transparent_55%)] opacity-60" />
 
-      <div className="relative mx-auto max-w-6xl px-6 py-24">
+      <div className="relative mx-auto max-w-6xl px-6 pb-24 pt-8">
         {/* Back link */}
         <Link
           href="/"
