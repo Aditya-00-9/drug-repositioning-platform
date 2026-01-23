@@ -12,6 +12,7 @@ export const DRUGS: DrugProfile[] = [
         year: 2021,
         link: "https://pubmed.ncbi.nlm.nih.gov/33674927/",
         tier: "Investigational",
+        quality: "Systematic Review",
         notes: "Systematic review of observational studies suggesting potential neuroprotective effects. Mechanistic rationale via AMPK activation and mitochondrial function.",
       },
       {
@@ -20,6 +21,7 @@ export const DRUGS: DrugProfile[] = [
         year: 2018,
         link: "https://pubmed.ncbi.nlm.nih.gov/30019414/",
         tier: "Supportive",
+        quality: "Meta-analysis",
         notes: "Meta-analysis supporting off-label use in PCOS for metabolic and reproductive outcomes.",
       },
       {
@@ -28,6 +30,7 @@ export const DRUGS: DrugProfile[] = [
         year: 2020,
         link: "https://pubmed.ncbi.nlm.nih.gov/32109023/",
         tier: "Approved",
+        quality: "RCT",
         notes: "First-line therapy for type 2 diabetes with established cardiovascular benefits.",
       },
       {
@@ -55,6 +58,7 @@ export const DRUGS: DrugProfile[] = [
         year: 2020,
         link: "https://pubmed.ncbi.nlm.nih.gov/32109023/",
         tier: "Approved",
+        quality: "Meta-analysis",
         notes: "FDA-approved for erectile dysfunction. Well-established efficacy and safety profile.",
       },
       {
@@ -63,6 +67,7 @@ export const DRUGS: DrugProfile[] = [
         year: 2019,
         link: "https://pubmed.ncbi.nlm.nih.gov/31060865/",
         tier: "Approved",
+        quality: "RCT",
         notes: "FDA-approved for PAH. PDE5 inhibition improves hemodynamics and exercise capacity.",
       },
       {
@@ -71,6 +76,7 @@ export const DRUGS: DrugProfile[] = [
         year: 2020,
         link: "https://pubmed.ncbi.nlm.nih.gov/32876675/",
         tier: "Supportive",
+        quality: "RCT",
         notes: "Mixed results in HFpEF. Some benefit in exercise capacity but limited impact on clinical outcomes. Further investigation warranted.",
       },
       {
@@ -79,6 +85,7 @@ export const DRUGS: DrugProfile[] = [
         year: 2021,
         link: "https://pubmed.ncbi.nlm.nih.gov/34058123/",
         tier: "Investigational",
+        quality: "Systematic Review",
         notes: "Preliminary evidence for prevention of high-altitude pulmonary edema. Small studies, requires validation.",
       },
     ],
@@ -98,6 +105,7 @@ export const DRUGS: DrugProfile[] = [
         year: 2019,
         link: "https://pubmed.ncbi.nlm.nih.gov/31060865/",
         tier: "Approved",
+        quality: "RCT",
         notes: "FDA-approved immunosuppressant for renal transplantation. mTOR inhibition prevents T-cell activation.",
       },
       {
@@ -106,6 +114,7 @@ export const DRUGS: DrugProfile[] = [
         year: 2021,
         link: "https://pubmed.ncbi.nlm.nih.gov/34058123/",
         tier: "Investigational",
+        quality: "Observational",
         notes: "Preclinical evidence for lifespan extension. Human trials in progress. Mechanistic rationale via mTOR pathway modulation.",
       },
       {
@@ -114,6 +123,7 @@ export const DRUGS: DrugProfile[] = [
         year: 2022,
         link: "https://pubmed.ncbi.nlm.nih.gov/35013901/",
         tier: "Supportive",
+        quality: "Systematic Review",
         notes: "Everolimus (rapamycin analog) approved for multiple cancers. Rapamycin itself shows promise in select tumor types.",
       },
       {
@@ -122,6 +132,7 @@ export const DRUGS: DrugProfile[] = [
         year: 2020,
         link: "https://pubmed.ncbi.nlm.nih.gov/32876675/",
         tier: "Supportive",
+        quality: "Systematic Review",
         notes: "Evidence supports use in TSC-related tumors and seizures. Off-label but well-documented.",
       },
     ],

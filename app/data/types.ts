@@ -2,6 +2,8 @@
 
 export type EvidenceTier = "Approved" | "Supportive" | "Investigational";
 
+export type SourceQuality = "RCT" | "Meta-analysis" | "Observational" | "Systematic Review" | "Case Study";
+
 export type EvidenceRecord = {
   title: string;
   source: "PubMed" | "ClinicalTrials.gov";
@@ -9,6 +11,7 @@ export type EvidenceRecord = {
   link: string;
   tier: EvidenceTier;
   notes?: string;
+  quality?: SourceQuality; // Tier 2 - Source Quality Tags
 };
 
 /**
