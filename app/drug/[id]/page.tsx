@@ -12,7 +12,6 @@ import {
   ChevronUp,
   BookOpen,
   Activity,
-  Shield,
   Brain,
   Clock,
   Star,
@@ -364,7 +363,9 @@ function DrugProfilePageClient({ params }: { params: Promise<{ id: string }> }) 
         {/* Drug Snapshot Card - Tier 1 (Fake) */}
         <section
           id="snapshot"
-          ref={(el) => (sectionRefs.current.snapshot = el)}
+          ref={(el) => {
+              sectionRefs.current.snapshot = el;
+            }}
           className="mb-12 rounded-2xl border border-slate-800/80 bg-slate-950/60 p-8 shadow-[0_26px_90px_rgba(15,23,42,0.9)]"
         >
           <div className="mb-6 flex items-center gap-3">
@@ -491,7 +492,9 @@ function DrugProfilePageClient({ params }: { params: Promise<{ id: string }> }) 
               bgColor="bg-emerald-950/20"
               isExpanded={expandedSections.has("approved")}
               onToggle={() => toggleSection("approved")}
-              sectionRef={(el) => (sectionRefs.current.approved = el)}
+              sectionRef={(el) => {
+                sectionRefs.current.approved = el;
+              }}
             />
           )}
 
@@ -506,7 +509,9 @@ function DrugProfilePageClient({ params }: { params: Promise<{ id: string }> }) 
               bgColor="bg-cyan-950/20"
               isExpanded={expandedSections.has("supportive")}
               onToggle={() => toggleSection("supportive")}
-              sectionRef={(el) => (sectionRefs.current.supportive = el)}
+              sectionRef={(el) => {
+                sectionRefs.current.supportive = el;
+              }}
             />
           )}
 
@@ -521,7 +526,9 @@ function DrugProfilePageClient({ params }: { params: Promise<{ id: string }> }) 
               bgColor="bg-amber-950/20"
               isExpanded={expandedSections.has("investigational")}
               onToggle={() => toggleSection("investigational")}
-              sectionRef={(el) => (sectionRefs.current.investigational = el)}
+              sectionRef={(el) => {
+                sectionRefs.current.investigational = el;
+              }}
             />
           )}
         </div>
@@ -529,7 +536,9 @@ function DrugProfilePageClient({ params }: { params: Promise<{ id: string }> }) 
         {/* Evidence Summary */}
         <section
           id="summary"
-          ref={(el) => (sectionRefs.current.summary = el)}
+          ref={(el) => {
+            sectionRefs.current.summary = el;
+          }}
           className="mt-12 rounded-2xl border border-slate-800/80 bg-slate-950/60 p-8 shadow-[0_26px_90px_rgba(15,23,42,0.9)]"
         >
           <div className="mb-4 flex items-center gap-3">
@@ -564,7 +573,9 @@ function DrugProfilePageClient({ params }: { params: Promise<{ id: string }> }) 
         {/* Data Source Disclosure - Tier 3 (Build) */}
         <section
           id="sources"
-          ref={(el) => (sectionRefs.current.sources = el)}
+          ref={(el) => {
+            sectionRefs.current.sources = el;
+          }}
           className="mt-8 rounded-2xl border border-slate-800/80 bg-slate-950/60 p-6 shadow-[0_26px_90px_rgba(15,23,42,0.9)]"
         >
           <div className="mb-4 flex items-center gap-2">
