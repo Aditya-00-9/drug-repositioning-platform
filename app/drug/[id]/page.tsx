@@ -83,7 +83,7 @@ function DrugProfilePageClient({ params }: { params: Promise<{ id: string }> }) 
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(["approved", "supportive", "investigational"]));
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
-  const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -626,7 +626,7 @@ function EvidenceSection({
   bgColor: string;
   isExpanded: boolean;
   onToggle: () => void;
-  sectionRef: (el: HTMLDivElement | null) => void;
+  sectionRef: (el: HTMLElement | null) => void;
 }) {
   return (
     <section
