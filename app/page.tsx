@@ -14,7 +14,7 @@ export default function HomePage() {
           <div className="mask-grid absolute inset-0 opacity-[0.35]" />
         </div>
 
-        <div className="relative mx-auto flex max-w-7xl flex-col gap-16 px-6 py-28 md:flex-row md:items-center md:py-32">
+        <div className="relative mx-auto flex max-w-7xl flex-col gap-16 px-6 pb-28 pt-8 md:flex-row md:items-center md:pb-32 md:pt-10">
           {/* Left column: purpose */}
           <div className="max-w-xl">
             <p className="mb-6 inline-flex items-center gap-3 rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-[11px] font-mono uppercase tracking-[0.24em] text-slate-500">

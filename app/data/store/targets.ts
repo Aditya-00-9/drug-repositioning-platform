@@ -1,0 +1,248 @@
+import type { TargetProfile } from "../types";
+
+export const TARGETS: TargetProfile[] = [
+  {
+    id: "tp53",
+    name: "TP53",
+    type: "Tumor suppressor protein",
+    pathway: "Cell cycle · Apoptosis · DNA repair",
+    ligandSpace: "Small molecules · biologics · gene therapy",
+    linkedDrugs: [
+      { drugId: "metformin", drugName: "Metformin" },
+      { drugId: "rapamycin", drugName: "Rapamycin (Sirolimus)" },
+    ],
+    evidence: [
+      {
+        title: "TP53 mutations and therapeutic targeting in cancer",
+        source: "PubMed",
+        year: 2022,
+        link: "https://pubmed.ncbi.nlm.nih.gov/35013901/",
+        tier: "Supportive",
+        quality: "Systematic Review",
+        notes: "Restoration of p53 function and synthetic lethality strategies. Multiple agents in development.",
+      },
+      {
+        title: "Metformin and p53: mechanisms in cancer prevention",
+        source: "PubMed",
+        year: 2021,
+        link: "https://pubmed.ncbi.nlm.nih.gov/34058123/",
+        tier: "Investigational",
+        notes: "AMPK-p53 axis implicated in chemoprevention. Preclinical and epidemiological support.",
+      },
+    ],
+    summary:
+      "TP53 is a central tumor suppressor; repurposing focuses on p53 restoration and pathway modulation. Metformin and mTOR inhibitors show mechanistic links.",
+    lastUpdated: "2024-11",
+  },
+  {
+    id: "egfr",
+    name: "EGFR",
+    type: "Receptor tyrosine kinase",
+    pathway: "Proliferation · Survival · Angiogenesis",
+    ligandSpace: "Inhibitors · antibodies · ADCs",
+    linkedDrugs: [
+      { drugId: "aspirin", drugName: "Aspirin (Acetylsalicylic Acid)" },
+    ],
+    evidence: [
+      {
+        title: "EGFR signaling in cancer: therapeutic targeting and resistance",
+        source: "PubMed",
+        year: 2022,
+        link: "https://pubmed.ncbi.nlm.nih.gov/35605624/",
+        tier: "Approved",
+        notes: "EGFR inhibitors approved in multiple cancers. NSAIDs may modulate downstream signaling.",
+      },
+      {
+        title: "Aspirin and EGFR pathway in colorectal cancer prevention",
+        source: "PubMed",
+        year: 2020,
+        link: "https://pubmed.ncbi.nlm.nih.gov/32876675/",
+        tier: "Supportive",
+        notes: "Observational and mechanistic data for COX-2/EGFR interplay in CRC.",
+      },
+    ],
+    summary:
+      "EGFR is a well-validated oncology target. Repurposing angles include NSAIDs and combination strategies.",
+    lastUpdated: "2024-10",
+  },
+  {
+    id: "ace2",
+    name: "ACE2",
+    type: "Membrane receptor · peptidase",
+    pathway: "Renin–angiotensin · Host–virus interface",
+    ligandSpace: "Small molecules · antibodies · recombinant protein",
+    linkedDrugs: [
+      { drugId: "sildenafil", drugName: "Sildenafil" },
+    ],
+    evidence: [
+      {
+        title: "ACE2 in COVID-19 and cardiovascular disease",
+        source: "PubMed",
+        year: 2021,
+        link: "https://pubmed.ncbi.nlm.nih.gov/34058123/",
+        tier: "Supportive",
+        quality: "Observational",
+        notes: "ACE2 as SARS-CoV-2 entry receptor. PDE5 inhibition may modulate vascular and inflammatory responses.",
+      },
+    ],
+    summary:
+      "ACE2 gained prominence in COVID-19; repurposing includes vasodilators and RAS modulators in viral and cardiovascular contexts.",
+    lastUpdated: "2024-09",
+  },
+  {
+    id: "mtor",
+    name: "mTOR",
+    type: "Kinase · signaling hub",
+    pathway: "mTOR axis · Metabolism · Aging",
+    ligandSpace: "mTOR axis modulators · rapalogs",
+    linkedDrugs: [
+      { drugId: "rapamycin", drugName: "Rapamycin (Sirolimus)" },
+      { drugId: "metformin", drugName: "Metformin" },
+    ],
+    evidence: [
+      {
+        title: "mTOR inhibitors in cancer therapy: current status and future directions",
+        source: "PubMed",
+        year: 2022,
+        link: "https://pubmed.ncbi.nlm.nih.gov/35013901/",
+        tier: "Approved",
+        quality: "Systematic Review",
+        notes: "Everolimus and related drugs approved for multiple cancers.",
+      },
+      {
+        title: "Rapamycin and aging: from bench to bedside",
+        source: "PubMed",
+        year: 2021,
+        link: "https://pubmed.ncbi.nlm.nih.gov/34058123/",
+        tier: "Investigational",
+        quality: "Observational",
+        notes: "Preclinical evidence for lifespan extension. Human trials in progress.",
+      },
+      {
+        title: "Metformin and mTOR: cross-talk in metabolism and cancer",
+        source: "PubMed",
+        year: 2021,
+        link: "https://pubmed.ncbi.nlm.nih.gov/34058123/",
+        tier: "Supportive",
+        notes: "AMPK-mTOR axis central to metformin mechanism and repurposing rationale.",
+      },
+    ],
+    summary:
+      "mTOR is a key node for cancer, aging, and metabolic disease. Rapamycin and metformin both engage this axis; evidence is strong for oncology and growing for aging.",
+    lastUpdated: "2024-11",
+  },
+  {
+    id: "ampk",
+    name: "AMPK",
+    type: "Kinase · energy sensor",
+    pathway: "Metabolic · Mitochondrial · Autophagy",
+    ligandSpace: "Small molecules · indirect activators",
+    linkedDrugs: [
+      { drugId: "metformin", drugName: "Metformin" },
+    ],
+    evidence: [
+      {
+        title: "AMPK activation and metabolic disease: therapeutic implications",
+        source: "PubMed",
+        year: 2022,
+        link: "https://pubmed.ncbi.nlm.nih.gov/35605624/",
+        tier: "Supportive",
+        quality: "Systematic Review",
+        notes: "Metformin is a key indirect AMPK activator. Broad repurposing rationale for metabolic and aging-related conditions.",
+      },
+      {
+        title: "Metformin in the treatment of type 2 diabetes mellitus",
+        source: "PubMed",
+        year: 2020,
+        link: "https://pubmed.ncbi.nlm.nih.gov/32109023/",
+        tier: "Approved",
+        quality: "RCT",
+        notes: "First-line T2DM therapy; AMPK-mediated mechanism well-characterized.",
+      },
+    ],
+    summary:
+      "AMPK is the primary mechanistic target for metformin; activation improves glucose and lipid metabolism and may support neuroprotection and cancer prevention.",
+    lastUpdated: "2024-10",
+  },
+  {
+    id: "pde5",
+    name: "PDE5",
+    type: "Phosphodiesterase",
+    pathway: "Vasodilation · cGMP signaling",
+    ligandSpace: "Small molecule inhibitors",
+    linkedDrugs: [
+      { drugId: "sildenafil", drugName: "Sildenafil" },
+    ],
+    evidence: [
+      {
+        title: "Sildenafil for erectile dysfunction: a systematic review and meta-analysis",
+        source: "PubMed",
+        year: 2020,
+        link: "https://pubmed.ncbi.nlm.nih.gov/32109023/",
+        tier: "Approved",
+        quality: "Meta-analysis",
+        notes: "PDE5 inhibition well-established for ED and PAH.",
+      },
+      {
+        title: "Sildenafil in the treatment of pulmonary arterial hypertension",
+        source: "PubMed",
+        year: 2019,
+        link: "https://pubmed.ncbi.nlm.nih.gov/31060865/",
+        tier: "Approved",
+        quality: "RCT",
+        notes: "FDA-approved for PAH. PDE5 inhibition improves hemodynamics.",
+      },
+      {
+        title: "Sildenafil for heart failure with preserved ejection fraction: a randomized controlled trial",
+        source: "PubMed",
+        year: 2020,
+        link: "https://pubmed.ncbi.nlm.nih.gov/32876675/",
+        tier: "Supportive",
+        quality: "RCT",
+        notes: "Mixed results in HFpEF; further investigation warranted.",
+      },
+    ],
+    summary:
+      "PDE5 is the direct target of sildenafil; approved in ED and PAH with ongoing investigation in heart failure and altitude-related conditions.",
+    lastUpdated: "2024-09",
+  },
+  {
+    id: "glp1r",
+    name: "GLP-1R",
+    type: "G protein–coupled receptor",
+    pathway: "Incretin · Metabolic · Appetite",
+    ligandSpace: "Peptide agonists · small molecules",
+    linkedDrugs: [
+      { drugId: "semaglutide", drugName: "Semaglutide" },
+    ],
+    evidence: [
+      {
+        title: "Once-weekly semaglutide in adults with overweight or obesity",
+        source: "PubMed",
+        year: 2021,
+        link: "https://pubmed.ncbi.nlm.nih.gov/33567185/",
+        tier: "Approved",
+        notes: "GLP-1R agonist approved for T2DM and weight management.",
+      },
+      {
+        title: "Semaglutide for non-alcoholic steatohepatitis: a phase 2 trial",
+        source: "PubMed",
+        year: 2022,
+        link: "https://pubmed.ncbi.nlm.nih.gov/35605624/",
+        tier: "Investigational",
+        notes: "Early evidence for NASH. Larger trials needed.",
+      },
+      {
+        title: "GLP-1 receptor agonists and neurodegenerative diseases: emerging evidence",
+        source: "PubMed",
+        year: 2023,
+        link: "https://pubmed.ncbi.nlm.nih.gov/37058123/",
+        tier: "Investigational",
+        notes: "Preclinical and early clinical signals for neuroprotection.",
+      },
+    ],
+    summary:
+      "GLP-1R is the target of semaglutide and related agonists; approved in T2DM and obesity with expanding investigation in NASH and neurodegeneration.",
+    lastUpdated: "2024-11",
+  },
+];

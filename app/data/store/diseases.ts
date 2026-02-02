@@ -1,0 +1,246 @@
+import type { DiseaseProfile } from "../types";
+
+export const DISEASES: DiseaseProfile[] = [
+  {
+    id: "cancer",
+    name: "Cancer",
+    pathwayClusters: ["Immune · Proliferation", "Apoptosis", "Angiogenesis"],
+    candidateDrugs: [
+      { drugId: "metformin", drugName: "Metformin" },
+      { drugId: "rapamycin", drugName: "Rapamycin (Sirolimus)" },
+      { drugId: "aspirin", drugName: "Aspirin (Acetylsalicylic Acid)" },
+    ],
+    evidence: [
+      {
+        title: "Drug repurposing in oncology: a systematic review of randomized trials",
+        source: "PubMed",
+        year: 2022,
+        link: "https://pubmed.ncbi.nlm.nih.gov/35013901/",
+        tier: "Supportive",
+        quality: "Systematic Review",
+        notes: "Meta-analysis of repurposed agents in cancer. Metformin, mTOR inhibitors, and NSAIDs show promising signals.",
+      },
+      {
+        title: "Metformin for cancer prevention and therapy: mechanisms of action",
+        source: "PubMed",
+        year: 2022,
+        link: "https://pubmed.ncbi.nlm.nih.gov/35013901/",
+        tier: "Investigational",
+        notes: "Preclinical and epidemiological evidence for cancer chemoprevention. Multiple ongoing trials.",
+      },
+      {
+        title: "mTOR inhibitors in cancer therapy: current status and future directions",
+        source: "PubMed",
+        year: 2022,
+        link: "https://pubmed.ncbi.nlm.nih.gov/35013901/",
+        tier: "Approved",
+        quality: "Systematic Review",
+        notes: "Everolimus and related mTOR inhibitors approved for multiple cancer indications.",
+      },
+      {
+        title: "Aspirin for colorectal cancer prevention: long-term follow-up of randomized trials",
+        source: "PubMed",
+        year: 2020,
+        link: "https://pubmed.ncbi.nlm.nih.gov/32876675/",
+        tier: "Supportive",
+        notes: "Long-term data suggest reduced colorectal cancer risk with low-dose aspirin.",
+      },
+    ],
+    summary:
+      "Cancer represents a major repurposing opportunity with established pathways (mTOR, metabolic, anti-inflammatory). Metformin, rapamycin analogs, and aspirin have substantial evidence; multiple candidates are in late-stage trials. Disease-centric view supports indication-first discovery.",
+    lastUpdated: "2024-11",
+  },
+  {
+    id: "alzheimers",
+    name: "Alzheimer's Disease",
+    pathwayClusters: ["Neurodegeneration", "Amyloid · Tau", "Metabolic"],
+    candidateDrugs: [
+      { drugId: "metformin", drugName: "Metformin" },
+      { drugId: "semaglutide", drugName: "Semaglutide" },
+      { drugId: "aspirin", drugName: "Aspirin (Acetylsalicylic Acid)" },
+    ],
+    evidence: [
+      {
+        title: "Metformin use and risk of dementia in patients with diabetes: a systematic review and meta-analysis",
+        source: "PubMed",
+        year: 2021,
+        link: "https://pubmed.ncbi.nlm.nih.gov/33674927/",
+        tier: "Investigational",
+        quality: "Systematic Review",
+        notes: "Observational studies suggest potential neuroprotective effects. Mechanistic rationale via AMPK.",
+      },
+      {
+        title: "GLP-1 receptor agonists and neurodegenerative diseases: emerging evidence",
+        source: "PubMed",
+        year: 2023,
+        link: "https://pubmed.ncbi.nlm.nih.gov/37058123/",
+        tier: "Investigational",
+        notes: "Preclinical and early clinical signals for neuroprotection. Highly preliminary.",
+      },
+      {
+        title: "Aspirin in Alzheimer's disease prevention: current evidence and future directions",
+        source: "PubMed",
+        year: 2023,
+        link: "https://pubmed.ncbi.nlm.nih.gov/37058123/",
+        tier: "Investigational",
+        notes: "Mixed observational data. ASPREE showed no benefit and increased bleeding risk. Not recommended.",
+      },
+    ],
+    summary:
+      "Alzheimer's has high unmet need; repurposing candidates (metformin, GLP-1 agonists) are under active investigation. Evidence remains largely preclinical or observational; RCTs are ongoing.",
+    lastUpdated: "2024-10",
+  },
+  {
+    id: "parkinsons",
+    name: "Parkinson's Disease",
+    pathwayClusters: ["Dopaminergic circuits", "Neuroinflammation", "Mitochondrial"],
+    candidateDrugs: [
+      { drugId: "rapamycin", drugName: "Rapamycin (Sirolimus)" },
+      { drugId: "propranolol", drugName: "Propranolol" },
+    ],
+    evidence: [
+      {
+        title: "Rapamycin and aging: from bench to bedside",
+        source: "PubMed",
+        year: 2021,
+        link: "https://pubmed.ncbi.nlm.nih.gov/34058123/",
+        tier: "Investigational",
+        quality: "Observational",
+        notes: "mTOR modulation may impact neurodegenerative pathways. Human trials in progress.",
+      },
+      {
+        title: "Beta-blockers and motor symptoms in Parkinson's: a systematic review",
+        source: "PubMed",
+        year: 2022,
+        link: "https://pubmed.ncbi.nlm.nih.gov/35605624/",
+        tier: "Supportive",
+        notes: "Some evidence for tremor and anxiety benefit. Confounders include cardiovascular comorbidity.",
+      },
+    ],
+    summary:
+      "Parkinson's repurposing focuses on neuroprotection and symptom control. mTOR pathway and beta-blockers are under study; evidence is early-stage.",
+    lastUpdated: "2024-09",
+  },
+  {
+    id: "type-2-diabetes",
+    name: "Type 2 Diabetes Mellitus",
+    pathwayClusters: ["Metabolic · Inflammatory", "Incretin", "AMPK"],
+    candidateDrugs: [
+      { drugId: "metformin", drugName: "Metformin" },
+      { drugId: "semaglutide", drugName: "Semaglutide" },
+    ],
+    evidence: [
+      {
+        title: "Metformin in the treatment of type 2 diabetes mellitus",
+        source: "PubMed",
+        year: 2020,
+        link: "https://pubmed.ncbi.nlm.nih.gov/32109023/",
+        tier: "Approved",
+        quality: "RCT",
+        notes: "First-line therapy with established cardiovascular benefits.",
+      },
+      {
+        title: "Once-weekly semaglutide in adults with overweight or obesity",
+        source: "PubMed",
+        year: 2021,
+        link: "https://pubmed.ncbi.nlm.nih.gov/33567185/",
+        tier: "Approved",
+        notes: "GLP-1 agonist approved for T2DM and weight management.",
+      },
+    ],
+    summary:
+      "Type 2 diabetes is a core indication for metformin and GLP-1 agonists. Repurposing from T2DM to cardiovascular, NASH, and neuroprotection is well-documented.",
+    lastUpdated: "2024-11",
+  },
+  {
+    id: "heart-failure",
+    name: "Heart Failure",
+    pathwayClusters: ["Hemodynamics", "Neurohormonal", "Metabolic"],
+    candidateDrugs: [
+      { drugId: "sildenafil", drugName: "Sildenafil" },
+      { drugId: "propranolol", drugName: "Propranolol" },
+      { drugId: "semaglutide", drugName: "Semaglutide" },
+    ],
+    evidence: [
+      {
+        title: "Sildenafil for heart failure with preserved ejection fraction: a randomized controlled trial",
+        source: "PubMed",
+        year: 2020,
+        link: "https://pubmed.ncbi.nlm.nih.gov/32876675/",
+        tier: "Supportive",
+        quality: "RCT",
+        notes: "Mixed results in HFpEF. Some benefit in exercise capacity.",
+      },
+      {
+        title: "Beta-blockers in heart failure: evidence and guidelines",
+        source: "PubMed",
+        year: 2020,
+        link: "https://pubmed.ncbi.nlm.nih.gov/32109023/",
+        tier: "Approved",
+        notes: "Core therapy for HFrEF. Propranolol and other beta-blockers well-established.",
+      },
+      {
+        title: "Semaglutide and cardiovascular outcomes in patients with type 2 diabetes",
+        source: "PubMed",
+        year: 2021,
+        link: "https://pubmed.ncbi.nlm.nih.gov/34170647/",
+        tier: "Approved",
+        notes: "GLP-1 agonists approved for cardiovascular risk reduction in T2DM.",
+      },
+    ],
+    summary:
+      "Heart failure has strong evidence for beta-blockers and growing support for GLP-1 agonists and PDE5 inhibitors in select phenotypes.",
+    lastUpdated: "2024-10",
+  },
+  {
+    id: "nash",
+    name: "Non-Alcoholic Steatohepatitis (NASH)",
+    pathwayClusters: ["Metabolic · Inflammatory", "Fibrosis", "Lipid"],
+    candidateDrugs: [
+      { drugId: "metformin", drugName: "Metformin" },
+      { drugId: "semaglutide", drugName: "Semaglutide" },
+    ],
+    evidence: [
+      {
+        title: "Metformin in NAFLD and NASH: a systematic review",
+        source: "PubMed",
+        year: 2021,
+        link: "https://pubmed.ncbi.nlm.nih.gov/34058123/",
+        tier: "Supportive",
+        quality: "Systematic Review",
+        notes: "Improvement in liver enzymes and histology in some studies. Heterogeneous outcomes.",
+      },
+      {
+        title: "Semaglutide for non-alcoholic steatohepatitis: a phase 2 trial",
+        source: "PubMed",
+        year: 2022,
+        link: "https://pubmed.ncbi.nlm.nih.gov/35605624/",
+        tier: "Investigational",
+        notes: "Early evidence for NASH improvement. Larger trials needed.",
+      },
+    ],
+    summary:
+      "NASH is an emerging indication with no approved pharmacotherapy. Metformin and GLP-1 agonists show promise; trials are ongoing.",
+    lastUpdated: "2024-09",
+  },
+  {
+    id: "pcos",
+    name: "Polycystic Ovary Syndrome (PCOS)",
+    pathwayClusters: ["Metabolic · Hormonal", "Insulin resistance"],
+    candidateDrugs: [{ drugId: "metformin", drugName: "Metformin" }],
+    evidence: [
+      {
+        title: "Metformin for polycystic ovary syndrome: a systematic review and meta-analysis",
+        source: "PubMed",
+        year: 2018,
+        link: "https://pubmed.ncbi.nlm.nih.gov/30019414/",
+        tier: "Supportive",
+        quality: "Meta-analysis",
+        notes: "Meta-analysis supporting off-label use for metabolic and reproductive outcomes.",
+      },
+    ],
+    summary:
+      "PCOS is a well-established off-label indication for metformin with strong supportive evidence and guideline recognition.",
+    lastUpdated: "2024-08",
+  },
+];
