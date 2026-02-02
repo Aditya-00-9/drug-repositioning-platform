@@ -38,3 +38,27 @@ export type NormalizedDrug = {
   mechanism: string;
   repurposedIndications: string[];
 };
+
+/** Disease-centric profile (indication / phenotype view) */
+export type DiseaseProfile = {
+  id: string;
+  name: string;
+  pathwayClusters: string[];
+  candidateDrugs: { drugId: string; drugName: string }[];
+  evidence: EvidenceRecord[];
+  summary: string;
+  lastUpdated: string;
+};
+
+/** Target / molecule-centric profile */
+export type TargetProfile = {
+  id: string;
+  name: string;
+  type: string; // e.g. "Protein", "Receptor"
+  pathway: string;
+  ligandSpace: string;
+  linkedDrugs: { drugId: string; drugName: string }[];
+  evidence: EvidenceRecord[];
+  summary: string;
+  lastUpdated: string;
+};
