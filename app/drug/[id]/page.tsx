@@ -19,9 +19,59 @@ import {
   Info,
   AlertTriangle,
 } from "lucide-react";
-import { getDrugById } from "../../data/pipeline";
 import type { DrugProfile, EvidenceRecord, EvidenceTier } from "../../data/types";
 import { use, useState, useEffect, useRef } from "react";
+
+type DeepResearchSnapshot = {
+  drugClass: string | null;
+  primaryApprovedIndications: string[];
+  mechanismsOfAction: string[];
+  keyPathways: string[];
+  overallConfidence: "Low" | "Medium" | "High";
+};
+
+type DeepResearchEvidenceItemApproved = {
+  indication: string;
+  studyType: string;
+  summary: string;
+  clinicalRelevance: string;
+};
+
+type DeepResearchEvidenceItemSupportive = {
+  strength: string;
+  summary: string;
+  limitations: string;
+};
+
+type DeepResearchEvidenceItemInvestigational = {
+  status: string;
+  summary: string;
+  translationalPotential: string;
+};
+
+type DeepResearchResponse = {
+  snapshot: DeepResearchSnapshot;
+  mechanisticRationale: string;
+  evidence: {
+    approved: DeepResearchEvidenceItemApproved[];
+    supportive: DeepResearchEvidenceItemSupportive[];
+    investigational: DeepResearchEvidenceItemInvestigational[];
+  };
+  evidenceTimeline: string[];
+  evidenceSummary: {
+    solid: string;
+    promising: string;
+    speculative: string;
+  };
+  confidenceAndCaveats: {
+    evidenceGaps: string;
+    confounders: string;
+    safetyRisks: string;
+    regulatoryLimitations: string;
+    interpretationWarnings: string;
+  };
+  dataSources: string[];
+};
 
 // Fake data generators for prototype features
 function getDrugClass(drugName: string): string {
@@ -79,13 +129,31 @@ function getAIInsight(drug: DrugProfile): string {
 
 function DrugProfilePageClient({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
-  const drug: DrugProfile | undefined = getDrugById(resolvedParams.id);
+  const [drug, setDrug] = useState<DrugProfile | null>(null);
+  const [loading, setLoading] = useState(true);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(["approved", "supportive", "investigational"]));
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [isDeepPanelOpen, setIsDeepPanelOpen] = useState(false);
+  const [deepLoading, setDeepLoading] = useState(false);
+  const [deepError, setDeepError] = useState<string | null>(null);
+  const [deepData, setDeepData] = useState<DeepResearchResponse | null>(null);
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
 
   useEffect(() => {
+    setLoading(true);
+    fetch(`/api/drugs/${encodeURIComponent(resolvedParams.id)}`)
+      .then((r) => {
+        if (!r.ok) return null;
+        return r.json();
+      })
+      .then((data: DrugProfile | null) => setDrug(data ?? null))
+      .catch(() => setDrug(null))
+      .finally(() => setLoading(false));
+  }, [resolvedParams.id]);
+
+  useEffect(() => {
+    if (!drug) return;
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -103,6 +171,16 @@ function DrugProfilePageClient({ params }: { params: Promise<{ id: string }> }) 
 
     return () => observer.disconnect();
   }, [drug]);
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-gradient-to-b from-navy-900 via-black to-black">
+        <div className="mx-auto max-w-6xl px-6 py-24 text-center text-slate-400">
+          Loading drug from sheet…
+        </div>
+      </main>
+    );
+  }
 
   if (!drug) {
     return (
@@ -151,6 +229,46 @@ function DrugProfilePageClient({ params }: { params: Promise<{ id: string }> }) 
     const element = sectionRefs.current[sectionId];
     if (element) {
       element.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  const runDeepResearch = async () => {
+    setIsDeepPanelOpen(true);
+    setDeepError(null);
+    setDeepLoading(true);
+    try {
+      const prompt = [
+        `Drug-centric deep research on repurposing opportunities for ${drug.name} (id: ${drug.id}).`,
+        `Primary approved indications: ${drug.approvedUses.join(", ") || "none listed"}.`,
+        "Focus on repurposing across drugs × diseases × molecular targets, using the specified evidence tiers and conservative interpretation.",
+      ].join(" ");
+
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [
+            {
+              role: "user",
+              content: prompt,
+            },
+          ],
+        }),
+      });
+
+      if (!res.ok) {
+        const errorBody = await res.json().catch(() => ({}));
+        throw new Error(errorBody.error || "Deep research request failed.");
+      }
+
+      const json = (await res.json()) as DeepResearchResponse;
+      setDeepData(json);
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Unexpected error running deep research.";
+      setDeepError(message);
+    } finally {
+      setDeepLoading(false);
     }
   };
 
@@ -302,7 +420,7 @@ function DrugProfilePageClient({ params }: { params: Promise<{ id: string }> }) 
           </div>
 
           {/* Action buttons */}
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             <button
               onClick={() => setIsBookmarked(!isBookmarked)}
               className={`flex h-11 items-center gap-2 rounded-lg border px-4 text-sm font-medium transition-all ${
@@ -327,6 +445,12 @@ function DrugProfilePageClient({ params }: { params: Promise<{ id: string }> }) 
             >
               <Download size={16} />
               Export PDF
+            </button>
+            <button
+              onClick={runDeepResearch}
+              className="flex h-11 items-center gap-2 rounded-lg border border-teal-500/60 bg-teal-950/40 px-4 text-xs font-semibold uppercase tracking-[0.18em] text-teal-200 ring-1 ring-teal-500/30 transition-all hover:bg-teal-900/40"
+            >
+              Deep Research Mode
             </button>
           </div>
         </div>
@@ -597,6 +721,261 @@ function DrugProfilePageClient({ params }: { params: Promise<{ id: string }> }) 
           </div>
         </section>
       </div>
+      {isDeepPanelOpen && (
+        <div className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-sm">
+          <aside className="flex h-full w-full max-w-xl flex-col border-l border-slate-800 bg-slate-950/95 px-6 pb-6 pt-5 shadow-[0_0_60px_rgba(15,23,42,0.95)]">
+            <div className="mb-4 flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[11px] font-mono uppercase tracking-[0.24em] text-teal-300/90">
+                  Deep Research Mode
+                </p>
+                <h2 className="mt-1 text-sm font-semibold text-slate-50">
+                  Drug repurposing intelligence for {drug.name}
+                </h2>
+                <p className="mt-1 text-xs text-slate-400">
+                  Research-grade, non-clinical synthesis. Conservative interpretation only.
+                </p>
+              </div>
+              <button
+                onClick={() => setIsDeepPanelOpen(false)}
+                className="rounded-full border border-slate-700/70 bg-slate-900/80 px-3 py-1 text-[11px] font-mono uppercase tracking-[0.18em] text-slate-400 hover:border-slate-500 hover:text-slate-100"
+              >
+                Close
+              </button>
+            </div>
+
+            {deepLoading && (
+              <div className="mt-4 space-y-3 text-xs text-slate-400">
+                <p className="font-mono uppercase tracking-[0.18em] text-teal-300">
+                  Running systematic query…
+                </p>
+                <div className="h-2 w-32 animate-pulse rounded-full bg-teal-500/40" />
+                <div className="space-y-2">
+                  <div className="h-3 rounded-md bg-slate-800/80" />
+                  <div className="h-3 rounded-md bg-slate-800/60" />
+                  <div className="h-3 rounded-md bg-slate-800/40" />
+                </div>
+              </div>
+            )}
+
+            {!deepLoading && deepError && (
+              <div className="mt-4 space-y-3">
+                <div className="rounded-lg border border-red-500/40 bg-red-950/30 p-3 text-xs text-red-200">
+                  {deepError}
+                </div>
+                {deepError.includes("OPENAI_API_KEY") && (
+                  <div className="rounded-lg border border-slate-600 bg-slate-900/60 p-3 text-xs text-slate-300 space-y-2">
+                    <p className="font-medium text-slate-200">To enable Deep Research Mode:</p>
+                    <ol className="list-decimal list-inside space-y-1 text-slate-400">
+                      <li>Get an API key from <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-teal-400 hover:underline">OpenAI</a>.</li>
+                      <li>Create a file <code className="rounded bg-slate-800 px-1 py-0.5 font-mono">.env.local</code> in the project root.</li>
+                      <li>Add <code className="rounded bg-slate-800 px-1 py-0.5 font-mono">OPENAI_API_KEY=sk-your-key</code>.</li>
+                      <li>Restart the dev server (<code className="rounded bg-slate-800 px-1 py-0.5 font-mono">npm run dev</code>).</li>
+                    </ol>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {!deepLoading && deepData && (
+              <div className="mt-4 flex-1 space-y-5 overflow-y-auto pb-4 text-sm text-slate-200">
+                {/* Snapshot */}
+                <section className="rounded-xl border border-slate-800 bg-slate-900/70 p-4">
+                  <p className="mb-2 text-[11px] font-mono uppercase tracking-[0.2em] text-slate-500">
+                    Snapshot
+                  </p>
+                  <div className="space-y-1 text-xs text-slate-300">
+                    <p>
+                      <span className="font-semibold text-slate-100">Drug class:</span>{" "}
+                      {deepData.snapshot.drugClass ?? "Not specified"}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-100">Approved indications:</span>{" "}
+                      {deepData.snapshot.primaryApprovedIndications.join(", ") || "Not specified"}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-100">Mechanisms:</span>{" "}
+                      {deepData.snapshot.mechanismsOfAction.join(", ") || "Not specified"}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-100">Key pathways:</span>{" "}
+                      {deepData.snapshot.keyPathways.join(", ") || "Not specified"}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-100">Overall confidence:</span>{" "}
+                      {deepData.snapshot.overallConfidence}
+                    </p>
+                  </div>
+                </section>
+
+                {/* Mechanistic rationale */}
+                <section className="rounded-xl border border-slate-800 bg-slate-900/70 p-4">
+                  <p className="mb-2 text-[11px] font-mono uppercase tracking-[0.2em] text-slate-500">
+                    Mechanistic rationale
+                  </p>
+                  <p className="text-xs leading-relaxed text-slate-200">
+                    {deepData.mechanisticRationale}
+                  </p>
+                </section>
+
+                {/* Evidence sections */}
+                <section className="space-y-4">
+                  <div>
+                    <p className="mb-1 text-[11px] font-mono uppercase tracking-[0.2em] text-emerald-300">
+                      Approved evidence
+                    </p>
+                    {deepData.evidence.approved.length === 0 ? (
+                      <p className="text-xs text-slate-500">No approved evidence identified.</p>
+                    ) : (
+                      <div className="space-y-3">
+                        {deepData.evidence.approved.map((e, idx) => (
+                          <div
+                            key={idx}
+                            className="rounded-lg border border-emerald-700/60 bg-emerald-950/20 p-3 text-xs"
+                          >
+                            <p className="font-semibold text-emerald-200">{e.indication}</p>
+                            <p className="mt-1 text-[11px] text-emerald-300/90">
+                              {e.studyType} · {e.clinicalRelevance}
+                            </p>
+                            <p className="mt-2 text-slate-100">{e.summary}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div>
+                    <p className="mb-1 text-[11px] font-mono uppercase tracking-[0.2em] text-cyan-300">
+                      Supportive evidence
+                    </p>
+                    {deepData.evidence.supportive.length === 0 ? (
+                      <p className="text-xs text-slate-500">No supportive evidence identified.</p>
+                    ) : (
+                      <div className="space-y-3">
+                        {deepData.evidence.supportive.map((e, idx) => (
+                          <div
+                            key={idx}
+                            className="rounded-lg border border-cyan-700/60 bg-cyan-950/20 p-3 text-xs"
+                          >
+                            <p className="font-semibold text-cyan-200">{e.strength}</p>
+                            <p className="mt-2 text-slate-100">{e.summary}</p>
+                            <p className="mt-1 text-[11px] text-slate-400">
+                              Limitations: {e.limitations}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div>
+                    <p className="mb-1 text-[11px] font-mono uppercase tracking-[0.2em] text-amber-300">
+                      Investigational evidence
+                    </p>
+                    {deepData.evidence.investigational.length === 0 ? (
+                      <p className="text-xs text-slate-500">No investigational evidence identified.</p>
+                    ) : (
+                      <div className="space-y-3">
+                        {deepData.evidence.investigational.map((e, idx) => (
+                          <div
+                            key={idx}
+                            className="rounded-lg border border-amber-700/60 bg-amber-950/20 p-3 text-xs"
+                          >
+                            <p className="font-semibold text-amber-200">{e.status}</p>
+                            <p className="mt-2 text-slate-100">{e.summary}</p>
+                            <p className="mt-1 text-[11px] text-slate-300">
+                              Translational potential: {e.translationalPotential}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </section>
+
+                {/* Timeline */}
+                <section className="rounded-xl border border-slate-800 bg-slate-900/70 p-4">
+                  <p className="mb-2 text-[11px] font-mono uppercase tracking-[0.2em] text-slate-500">
+                    Evidence timeline (conceptual)
+                  </p>
+                  {deepData.evidenceTimeline.length === 0 ? (
+                    <p className="text-xs text-slate-500">No timeline narrative provided.</p>
+                  ) : (
+                    <ul className="list-disc space-y-1 pl-4 text-xs text-slate-200">
+                      {deepData.evidenceTimeline.map((step, idx) => (
+                        <li key={idx}>{step}</li>
+                      ))}
+                    </ul>
+                  )}
+                </section>
+
+                {/* Summary & caveats */}
+                <section className="rounded-xl border border-slate-800 bg-slate-900/70 p-4">
+                  <p className="mb-2 text-[11px] font-mono uppercase tracking-[0.2em] text-slate-500">
+                    Evidence synthesis
+                  </p>
+                  <div className="space-y-2 text-xs">
+                    <p>
+                      <span className="font-semibold text-slate-100">Solid:</span>{" "}
+                      {deepData.evidenceSummary.solid}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-100">Promising:</span>{" "}
+                      {deepData.evidenceSummary.promising}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-100">Speculative:</span>{" "}
+                      {deepData.evidenceSummary.speculative}
+                    </p>
+                  </div>
+                </section>
+
+                <section className="rounded-xl border border-amber-800/70 bg-amber-950/15 p-4">
+                  <p className="mb-2 text-[11px] font-mono uppercase tracking-[0.2em] text-amber-300">
+                    Confidence & caveats
+                  </p>
+                  <div className="space-y-1 text-xs text-amber-100">
+                    <p>
+                      <span className="font-semibold">Evidence gaps:</span>{" "}
+                      {deepData.confidenceAndCaveats.evidenceGaps}
+                    </p>
+                    <p>
+                      <span className="font-semibold">Confounders:</span>{" "}
+                      {deepData.confidenceAndCaveats.confounders}
+                    </p>
+                    <p>
+                      <span className="font-semibold">Safety & risk:</span>{" "}
+                      {deepData.confidenceAndCaveats.safetyRisks}
+                    </p>
+                    <p>
+                      <span className="font-semibold">Regulatory limits:</span>{" "}
+                      {deepData.confidenceAndCaveats.regulatoryLimitations}
+                    </p>
+                    <p>
+                      <span className="font-semibold">Interpretation warnings:</span>{" "}
+                      {deepData.confidenceAndCaveats.interpretationWarnings}
+                    </p>
+                  </div>
+                  <p className="mt-3 text-[10px] text-amber-200/80">
+                    Research-only intelligence. Not treatment guidance.
+                  </p>
+                </section>
+
+                <section className="rounded-xl border border-slate-800 bg-slate-900/70 p-4">
+                  <p className="mb-2 text-[11px] font-mono uppercase tracking-[0.2em] text-slate-500">
+                    Data sources (declared)
+                  </p>
+                  <p className="text-[11px] text-slate-300">
+                    {deepData.dataSources.length === 0
+                      ? "Sources not explicitly listed."
+                      : deepData.dataSources.join(" · ")}
+                  </p>
+                </section>
+              </div>
+            )}
+          </aside>
+        </div>
+      )}
     </main>
   );
 }

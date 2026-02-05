@@ -49,6 +49,7 @@ pnpm dev
 ## 🛠️ Available Scripts
 
 - `npm run dev` - Start development server
+- `npm run dev:win` - (Windows) Clear dev lock and start dev server if you see "Unable to acquire lock"
 - `npm run build` - Build for production
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint
@@ -153,11 +154,18 @@ If you need to add environment variables:
    - Navigate to "Environment Variables"
    - Add your variables
 
-2. **For local development**, create a `.env.local` file:
+2. **For local development**, create a `.env.local` file (see `.env.example` for a template):
 ```bash
 # .env.local
 YOUR_VARIABLE_NAME=your_value
 ```
+
+**Deep Research Mode** (drug/disease/target pages) requires an OpenAI API key:
+```bash
+# .env.local
+OPENAI_API_KEY=sk-your-key-here
+```
+Get a key at [OpenAI API keys](https://platform.openai.com/api-keys). Restart the dev server after adding it.
 
 **Note**: `.env.local` is already in `.gitignore` and won't be committed.
 
@@ -180,6 +188,18 @@ Before deploying, ensure:
 3. Verify all imports are correct
 4. Check that all files are committed to Git
 5. Ensure `package.json` has all required dependencies
+
+### App won't start locally (Windows / PowerShell)
+
+- **"The token '&&' is not a valid statement separator"**  
+  In PowerShell, use `;` instead of `&&` to chain commands, e.g.  
+  `cd c:\path\to\drug-platform; npm run dev`  
+  Or open the terminal in the project folder and run `npm run dev` only.
+
+- **"Unable to acquire lock" or "port 3000 is in use"**  
+  Another Next.js dev server may be running. Either close that terminal/process, or run:  
+  `npm run dev:win`  
+  This clears the dev lock (if present) and starts the server. If port 3000 is still in use, Next.js will use the next free port (e.g. 3001); check the terminal for the URL.
 
 ### Common Issues
 

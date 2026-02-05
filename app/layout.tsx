@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import HeaderSearch from "./components/HeaderSearch";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -34,7 +35,7 @@ export default function RootLayout({
               </div>
             </Link>
 
-            <nav className="flex items-center gap-10 text-[11px] font-medium uppercase tracking-[0.2em] text-slate-400">
+            <nav className="flex items-center gap-6 text-[11px] font-medium uppercase tracking-[0.2em] text-slate-400">
               <Link
                 href="/"
                 className="transition-colors hover:text-teal-300/90"
@@ -59,7 +60,9 @@ export default function RootLayout({
               >
                 Targets
               </Link>
-
+              <div className="border-l border-slate-800 pl-6">
+                <HeaderSearch />
+              </div>
               <div className="hidden items-center gap-3 border-l border-slate-800 pl-6 text-[10px] font-mono text-slate-500 md:flex">
                 <span className="rounded-full bg-slate-900/80 px-2 py-1 text-[9px] uppercase tracking-[0.2em] text-teal-300/90 ring-1 ring-teal-500/30">
                   Research build · 2026
