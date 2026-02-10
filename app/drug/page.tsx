@@ -4,16 +4,11 @@ import Link from "next/link";
 import { ArrowLeft, Beaker } from "lucide-react";
 import { useState, useEffect } from "react";
 import type { DrugProfile } from "../data/types";
-import DeepResearchPanel, { type DeepResearchResponse } from "../components/DeepResearchPanel";
 
 export default function DrugPortal() {
   const [query, setQuery] = useState("");
   const [drugs, setDrugs] = useState<DrugProfile[]>([]);
   const [loading, setLoading] = useState(true);
-  const [deepOpen, setDeepOpen] = useState(false);
-  const [deepLoading, setDeepLoading] = useState(false);
-  const [deepError, setDeepError] = useState<string | null>(null);
-  const [deepData, setDeepData] = useState<DeepResearchResponse | null>(null);
 
   useEffect(() => {
     const url = query.trim() ? `/api/drugs?search=${encodeURIComponent(query.trim())}` : "/api/drugs";
@@ -24,33 +19,6 @@ export default function DrugPortal() {
       .catch(() => setDrugs([]))
       .finally(() => setLoading(false));
   }, [query]);
-
-  async function runDeepResearchWithSearch() {
-    const text = query.trim() || "drug repurposing opportunities";
-    setDeepOpen(true);
-    setDeepError(null);
-    setDeepLoading(true);
-    setDeepData(null);
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: [{ role: "user", content: text }],
-        }),
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || "Deep research failed.");
-      }
-      const json = (await res.json()) as DeepResearchResponse;
-      setDeepData(json);
-    } catch (e) {
-      setDeepError(e instanceof Error ? e.message : "Unexpected error.");
-    } finally {
-      setDeepLoading(false);
-    }
-  }
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-navy-900 via-black to-black">
@@ -87,31 +55,16 @@ export default function DrugPortal() {
           </p>
         </div>
 
-        {/* Search + Deep research */}
+        {/* Search — approved drugs only; click row to open profile */}
         <div className="mb-8 flex flex-wrap items-center gap-3">
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search drug (e.g. Metformin)"
+            placeholder="Search approved drug (e.g. Metformin)"
             className="w-full max-w-md rounded-lg border border-slate-700 bg-slate-900/80 px-4 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-400"
           />
-          <button
-            type="button"
-            onClick={runDeepResearchWithSearch}
-            className="rounded-lg border border-teal-500/60 bg-teal-950/40 px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-teal-200 ring-1 ring-teal-500/30 hover:bg-teal-900/40"
-          >
-            Deep research this search
-          </button>
         </div>
-        <DeepResearchPanel
-          open={deepOpen}
-          onClose={() => { setDeepOpen(false); setDeepError(null); setDeepData(null); }}
-          title={query.trim() ? `Drug search: ${query}` : "Drug repurposing"}
-          loading={deepLoading}
-          error={deepError}
-          data={deepData}
-        />
 
         {/* Table */}
         <div className="overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-950/60 shadow-[0_26px_90px_rgba(15,23,42,0.9)]">

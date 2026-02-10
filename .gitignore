@@ -24,6 +24,9 @@
 .DS_Store
 *.pem
 
+# Excel temporary lock files (created when workbook is open)
+~$*
+
 # debug
 npm-debug.log*
 yarn-debug.log*
