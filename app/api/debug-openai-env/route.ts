@@ -18,7 +18,6 @@ export async function GET() {
   return NextResponse.json({
     keySet: trimmed.length > 0,
     keyLength: trimmed.length,
-    keyMasked: trimmed.length > 11 ? `${trimmed.slice(0, 7)}...${trimmed.slice(-4)}` : "(empty or too short)",
     hasLeadingSpace,
     hint: hasLeadingSpace
       ? "BUG: OPENAI_API_KEY has leading/trailing space in .env.local — remove spaces around the value."
