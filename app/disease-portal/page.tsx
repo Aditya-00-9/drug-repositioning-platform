@@ -4,12 +4,14 @@ import Link from "next/link";
 import { ArrowLeft, Activity } from "lucide-react";
 import { useState } from "react";
 import { searchDiseases } from "../data/pipeline";
+import { slugify } from "../utils/slug";
 import type { DiseaseProfile } from "../data/types";
 
 export default function DiseasePortal() {
   const [query, setQuery] = useState("");
 
   const diseases: DiseaseProfile[] = searchDiseases(query);
+  const searchSlug = query.trim() ? slugify(query.trim()) : "";
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-navy-900 via-black to-black">
@@ -45,9 +47,17 @@ export default function DiseasePortal() {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search disease (e.g. Cancer, Alzheimer's)"
+            placeholder="Search disease or type any disease (e.g. Cancer, Alzheimer's)"
             className="w-full max-w-md rounded-lg border border-slate-700 bg-slate-900/80 px-4 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-400"
           />
+          {searchSlug && (
+            <Link
+              href={`/disease-portal/${searchSlug}`}
+              className="rounded-lg border border-teal-500/60 bg-teal-950/40 px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-teal-200 ring-1 ring-teal-500/30 hover:bg-teal-900/40"
+            >
+              View AI profile for &quot;{query.trim()}&quot;
+            </Link>
+          )}
         </div>
 
         <div className="overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-950/60 shadow-[0_26px_90px_rgba(15,23,42,0.9)]">
@@ -112,7 +122,16 @@ export default function DiseasePortal() {
 
             {diseases.length === 0 && (
               <div className="px-6 py-10 text-sm text-slate-500">
-                No diseases match your search.
+                {searchSlug ? (
+                  <>
+                    No curated diseases match.{" "}
+                    <Link href={`/disease-portal/${searchSlug}`} className="text-teal-300 hover:text-teal-200">
+                      View AI-generated profile for &quot;{query.trim()}&quot; →
+                    </Link>
+                  </>
+                ) : (
+                  "Type a disease name above to search or open an AI-generated profile."
+                )}
               </div>
             )}
           </div>

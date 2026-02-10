@@ -17,6 +17,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { getDiseaseById } from "../../data/pipeline";
+import { humanize } from "../../utils/slug";
 import type { DiseaseProfile, EvidenceRecord, EvidenceTier } from "../../data/types";
 import { use, useState, useEffect } from "react";
 
@@ -179,7 +180,17 @@ function EvidenceSection({
 
 function DiseaseProfilePageClient({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
-  const disease: DiseaseProfile | undefined = getDiseaseById(resolvedParams.id);
+  const id = resolvedParams.id?.trim() || "";
+  const curated = getDiseaseById(id);
+  const disease: DiseaseProfile = curated ?? {
+    id,
+    name: humanize(id),
+    pathwayClusters: [],
+    candidateDrugs: [],
+    evidence: [],
+    summary: "",
+    lastUpdated: new Date().toISOString().slice(0, 7),
+  };
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
     new Set(["approved", "supportive", "investigational"])
   );
@@ -188,38 +199,56 @@ function DiseaseProfilePageClient({ params }: { params: Promise<{ id: string }> 
   const [deepData, setDeepData] = useState<DeepResearchResponse | null>(null);
   const [retryTrigger, setRetryTrigger] = useState(0);
 
+  // Stable deps: id + retryTrigger only. Using `disease` would re-run every render (new object ref) and cause loading/content to flip.
   useEffect(() => {
-    if (!disease) return;
+    if (!id) return;
+    const curatedDisease = getDiseaseById(id);
+    const diseaseName = curatedDisease?.name ?? humanize(id);
+    const pathwayStr = curatedDisease?.pathwayClusters?.join(", ") || "none listed";
+    const candidateStr = curatedDisease?.candidateDrugs?.map((d) => d.drugName).join(", ") || "none listed";
     const prompt = [
-      `Disease-centric deep research on repurposing opportunities for ${disease.name} (id: ${disease.id}).`,
-      `Pathway clusters: ${disease.pathwayClusters.join(", ") || "none listed"}.`,
-      `Candidate drugs: ${disease.candidateDrugs.map((d) => d.drugName).join(", ") || "none listed"}.`,
+      `Disease-centric deep research on repurposing opportunities for ${diseaseName} (id: ${id}).`,
+      `Pathway clusters: ${pathwayStr}.`,
+      `Candidate drugs: ${candidateStr}.`,
       "Synthesize disease biology, unmet need, evidence tiers, and conservative repurposing options. Output the same JSON schema as for drugs (snapshot, evidence, timeline, summary, caveats, dataSources).",
     ].join(" ");
+
+    let cancelled = false;
     setDeepLoading(true);
     setDeepError(null);
     setDeepData(null);
+
     fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ messages: [{ role: "user", content: prompt }], context: "disease" }),
     })
       .then((res) => {
+        if (cancelled) return undefined;
         if (!res.ok) return res.json().then((b) => Promise.reject(new Error(b.error || "Failed to build profile.")));
         return res.json();
       })
-      .then((json: DeepResearchResponse) => setDeepData(json))
-      .catch((err) => setDeepError(err instanceof Error ? err.message : "Failed to build profile."))
-      .finally(() => setDeepLoading(false));
-  }, [disease, retryTrigger]);
+      .then((json: DeepResearchResponse | undefined) => {
+        if (!cancelled && json != null) setDeepData(json);
+      })
+      .catch((err) => {
+        if (!cancelled) setDeepError(err instanceof Error ? err.message : "Failed to build profile.");
+      })
+      .finally(() => {
+        if (!cancelled) setDeepLoading(false);
+      });
 
-  if (!disease) {
+    return () => {
+      cancelled = true;
+    };
+  }, [id, retryTrigger]);
+
+  if (!id) {
     return (
       <main className="min-h-screen bg-gradient-to-b from-navy-900 via-black to-black">
         <div className="mx-auto max-w-6xl px-6 py-24">
           <div className="rounded-2xl border border-red-500/30 bg-red-950/20 p-8 text-center">
             <p className="text-lg font-medium text-red-400">Disease not found</p>
-            <p className="mt-2 text-sm text-slate-400">ID: {resolvedParams.id}</p>
             <Link
               href="/disease-portal"
               className="mt-6 inline-flex items-center gap-2 text-sm text-teal-300 hover:text-teal-200"
