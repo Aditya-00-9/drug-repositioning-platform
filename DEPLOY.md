@@ -20,11 +20,17 @@ git push origin main
 
 ### Step 2: Deploy to Vercel
 
-1. Go to [vercel.com](https://vercel.com) and sign in with GitHub
-2. Click "Add New Project"
-3. Select your repository
-4. Click "Deploy" (settings are auto-detected)
-5. Done! Your site will be live in ~2 minutes
+1. Go to [vercel.com](https://vercel.com) and sign in with GitHub.
+2. Click **Add New** → **Project** and import your GitHub repo.
+3. **Add environment variable** (required for AI features):
+   - Before or after the first deploy: open your project → **Settings** → **Environment Variables**.
+   - Add:
+     - **Name:** `OPENAI_API_KEY`
+     - **Value:** your OpenAI API key (same as in `.env.local` locally).
+     - **Environment:** check Production, Preview, and Development if you use Vercel previews.
+   - Save. Redeploy (Deployments → ⋮ on latest → Redeploy) so the new env is applied.
+4. Click **Deploy** (or let the first deploy run; add the variable and redeploy after).
+5. Your site will be live at `https://your-project.vercel.app`. AI-powered drug/disease profiles will work once `OPENAI_API_KEY` is set.
 
 ### Future Updates
 
