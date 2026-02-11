@@ -101,9 +101,9 @@ export default function HeaderSearch() {
                 <p className="mb-1 px-2 text-[10px] font-mono uppercase tracking-[0.2em] text-slate-500">
                   Approved drugs
                 </p>
-                {drugs.slice(0, 8).map((d) => (
+                {drugs.slice(0, 8).map((d, idx) => (
                   <Link
-                    key={d.id}
+                    key={`drug-${d.id}-${idx}`}
                     href={`/drug/${d.id}`}
                     className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-200 hover:bg-slate-800/80"
                     onClick={() => setShowDropdown(false)}
@@ -119,9 +119,9 @@ export default function HeaderSearch() {
                 <p className="mb-1 px-2 text-[10px] font-mono uppercase tracking-[0.2em] text-slate-500">
                   Diseases (curated)
                 </p>
-                {diseases.slice(0, 8).map((d) => (
+                {diseases.slice(0, 8).map((d, idx) => (
                   <Link
-                    key={d.id}
+                    key={`disease-${d.id}-${idx}`}
                     href={`/disease-portal/${d.id}`}
                     className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-200 hover:bg-slate-800/80"
                     onClick={() => setShowDropdown(false)}

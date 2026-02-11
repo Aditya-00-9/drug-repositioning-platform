@@ -289,6 +289,13 @@ function DiseaseProfilePageClient({ params }: { params: Promise<{ id: string }> 
     });
   };
 
+  const scrollToSection = (sectionId: string) => {
+    setExpandedSections((prev) => new Set(prev).add(sectionId));
+    setTimeout(() => {
+      document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 0);
+  };
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-navy-900 via-black to-black">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.26),_transparent_55%)] opacity-60" />
@@ -401,18 +408,33 @@ function DiseaseProfilePageClient({ params }: { params: Promise<{ id: string }> 
           )}
 
           <div className="mt-6 grid grid-cols-3 gap-4 rounded-xl border border-slate-800/50 bg-slate-900/40 p-4">
-            <div className="text-center">
+            <button
+              type="button"
+              onClick={() => approvedCount > 0 && scrollToSection("approved")}
+              disabled={approvedCount === 0}
+              className="flex flex-col items-center rounded-lg py-2 transition-colors hover:bg-emerald-950/40 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 disabled:cursor-default disabled:opacity-60 disabled:hover:bg-transparent"
+            >
               <p className="text-2xl font-semibold text-emerald-400">{approvedCount}</p>
               <p className="mt-1 text-xs font-mono uppercase tracking-[0.2em] text-slate-400">Approved</p>
-            </div>
-            <div className="text-center">
+            </button>
+            <button
+              type="button"
+              onClick={() => supportiveCount > 0 && scrollToSection("supportive")}
+              disabled={supportiveCount === 0}
+              className="flex flex-col items-center rounded-lg py-2 transition-colors hover:bg-cyan-950/40 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 disabled:cursor-default disabled:opacity-60 disabled:hover:bg-transparent"
+            >
               <p className="text-2xl font-semibold text-cyan-400">{supportiveCount}</p>
               <p className="mt-1 text-xs font-mono uppercase tracking-[0.2em] text-slate-400">Supportive</p>
-            </div>
-            <div className="text-center">
+            </button>
+            <button
+              type="button"
+              onClick={() => investigationalCount > 0 && scrollToSection("investigational")}
+              disabled={investigationalCount === 0}
+              className="flex flex-col items-center rounded-lg py-2 transition-colors hover:bg-amber-950/40 focus:outline-none focus:ring-2 focus:ring-amber-500/50 disabled:cursor-default disabled:opacity-60 disabled:hover:bg-transparent"
+            >
               <p className="text-2xl font-semibold text-amber-400">{investigationalCount}</p>
               <p className="mt-1 text-xs font-mono uppercase tracking-[0.2em] text-slate-400">Investigational</p>
-            </div>
+            </button>
           </div>
 
           <div className="mt-6">
@@ -456,7 +478,7 @@ function DiseaseProfilePageClient({ params }: { params: Promise<{ id: string }> 
             {(approvedCount > 0 || supportiveCount > 0 || investigationalCount > 0) && (
               <div className="space-y-6">
                 {deepData.evidence?.approved?.length > 0 && (
-                  <section className="rounded-2xl border border-emerald-800/50 bg-emerald-950/20 overflow-hidden shadow-[0_26px_90px_rgba(15,23,42,0.9)]">
+                  <section id="approved" className="rounded-2xl border border-emerald-800/50 bg-emerald-950/20 overflow-hidden shadow-[0_26px_90px_rgba(15,23,42,0.9)]">
                     <button onClick={() => toggleSection("approved")} className="flex w-full items-center justify-between p-6 text-left hover:bg-slate-900/20">
                       <div className="flex items-center gap-3">
                         <CheckCircle2 className="text-emerald-400" size={20} />
@@ -479,7 +501,7 @@ function DiseaseProfilePageClient({ params }: { params: Promise<{ id: string }> 
                   </section>
                 )}
                 {deepData.evidence?.supportive?.length > 0 && (
-                  <section className="rounded-2xl border border-cyan-800/50 bg-cyan-950/20 overflow-hidden shadow-[0_26px_90px_rgba(15,23,42,0.9)]">
+                  <section id="supportive" className="rounded-2xl border border-cyan-800/50 bg-cyan-950/20 overflow-hidden shadow-[0_26px_90px_rgba(15,23,42,0.9)]">
                     <button onClick={() => toggleSection("supportive")} className="flex w-full items-center justify-between p-6 text-left hover:bg-slate-900/20">
                       <div className="flex items-center gap-3">
                         <AlertCircle className="text-cyan-400" size={20} />
@@ -502,7 +524,7 @@ function DiseaseProfilePageClient({ params }: { params: Promise<{ id: string }> 
                   </section>
                 )}
                 {deepData.evidence?.investigational?.length > 0 && (
-                  <section className="rounded-2xl border border-amber-800/50 bg-amber-950/20 overflow-hidden shadow-[0_26px_90px_rgba(15,23,42,0.9)]">
+                  <section id="investigational" className="rounded-2xl border border-amber-800/50 bg-amber-950/20 overflow-hidden shadow-[0_26px_90px_rgba(15,23,42,0.9)]">
                     <button onClick={() => toggleSection("investigational")} className="flex w-full items-center justify-between p-6 text-left hover:bg-slate-900/20">
                       <div className="flex items-center gap-3">
                         <FlaskConical className="text-amber-400" size={20} />

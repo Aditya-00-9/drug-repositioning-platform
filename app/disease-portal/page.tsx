@@ -69,9 +69,9 @@ export default function DiseasePortal() {
           </div>
 
           <div className="divide-y divide-slate-900/80">
-            {diseases.map((disease) => (
+            {diseases.map((disease, idx) => (
               <div
-                key={disease.id}
+                key={`${disease.id}-${idx}`}
                 className="grid grid-cols-[1.2fr,1fr,1fr,0.8fr] items-center gap-4 px-6 py-4 hover:bg-slate-900/60"
               >
                 <div className="flex items-center gap-3">

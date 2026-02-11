@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   ExternalLink,
@@ -18,9 +19,13 @@ import {
   GitCompare,
   Info,
   AlertTriangle,
+  Users,
+  Search,
 } from "lucide-react";
 import type { DrugProfile, EvidenceRecord, EvidenceTier } from "../../data/types";
 import { use, useState, useEffect, useRef } from "react";
+import { slugify } from "../../utils/slug";
+import { searchDiseases } from "../../data/pipeline";
 
 type DeepResearchSnapshot = {
   drugClass: string | null;
@@ -154,8 +159,17 @@ function formatTimelineStep(step: unknown): string {
   return String(step);
 }
 
+function filterDrugsForSearch(drugs: DrugProfile[], q: string): DrugProfile[] {
+  if (!q.trim()) return [];
+  const lower = q.toLowerCase().trim();
+  return drugs.filter(
+    (d) => d.name.toLowerCase().includes(lower) || d.id.toLowerCase().includes(lower)
+  );
+}
+
 function DrugProfilePageClient({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
+  const router = useRouter();
   const [drug, setDrug] = useState<DrugProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(["approved", "supportive", "investigational"]));
@@ -166,6 +180,10 @@ function DrugProfilePageClient({ params }: { params: Promise<{ id: string }> }) 
   const [deepData, setDeepData] = useState<DeepResearchResponse | null>(null);
   const [retryTrigger, setRetryTrigger] = useState(0);
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
+  const [searchQuery, setSearchQuery] = useState("");
+  const [drugsForSearch, setDrugsForSearch] = useState<DrugProfile[]>([]);
+  const [showSearchDropdown, setShowSearchDropdown] = useState(false);
+  const searchWrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -178,6 +196,23 @@ function DrugProfilePageClient({ params }: { params: Promise<{ id: string }> }) 
       .catch(() => setDrug(null))
       .finally(() => setLoading(false));
   }, [resolvedParams.id]);
+
+  useEffect(() => {
+    fetch("/api/drugs")
+      .then((r) => (r.ok ? r.json() : []))
+      .then(setDrugsForSearch)
+      .catch(() => setDrugsForSearch([]));
+  }, []);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (searchWrapperRef.current && !searchWrapperRef.current.contains(e.target as Node)) {
+        setShowSearchDropdown(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Auto-run AI synthesis when drug loads (or on retry).
   useEffect(() => {
@@ -296,6 +331,36 @@ function DrugProfilePageClient({ params }: { params: Promise<{ id: string }> }) 
     }
   };
 
+  const searchDrugs = filterDrugsForSearch(drugsForSearch, searchQuery);
+  const searchDiseasesList = searchQuery.trim() ? searchDiseases(searchQuery) : [];
+  const hasSearchResults = searchDrugs.length > 0 || searchDiseasesList.length > 0;
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key !== "Enter") return;
+    e.preventDefault();
+    const q = searchQuery.trim();
+    if (!q) return;
+    const qLower = q.toLowerCase();
+    const exactDrug =
+      drugsForSearch.find((d) => d.id.toLowerCase() === qLower) ||
+      drugsForSearch.find((d) => d.name.toLowerCase() === qLower);
+    if (exactDrug) {
+      setShowSearchDropdown(false);
+      router.push(`/drug/${exactDrug.id}`);
+      return;
+    }
+    const exactDisease =
+      searchDiseases(q).find((d) => d.id.toLowerCase() === qLower) ||
+      searchDiseases(q).find((d) => d.name.toLowerCase() === qLower);
+    if (exactDisease) {
+      setShowSearchDropdown(false);
+      router.push(`/disease-portal/${exactDisease.id}`);
+      return;
+    }
+    setShowSearchDropdown(false);
+    router.push(`/disease-portal/${slugify(q)}`);
+  };
+
   const handleExportPDF = () => {
     import("jspdf")
       .then((module) => {
@@ -410,6 +475,7 @@ function DrugProfilePageClient({ params }: { params: Promise<{ id: string }> }) 
     { id: "investigational", label: "Investigational", count: investigationalCount, icon: FlaskConical },
     { id: "summary", label: "Summary", icon: BookOpen },
     { id: "sources", label: "Sources", icon: Info },
+    { id: "community", label: "Community", icon: Users },
   ];
 
   return (
@@ -417,13 +483,81 @@ function DrugProfilePageClient({ params }: { params: Promise<{ id: string }> }) 
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.24),_transparent_55%)] opacity-60" />
 
       <div className="relative mx-auto max-w-6xl px-6 py-24">
-        {/* Back link */}
-        <Link
-          href="/drug"
-          className="mb-10 inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.22em] text-slate-500 transition-colors hover:text-teal-300"
-        >
-          <ArrowLeft size={14} /> Back to drug list
-        </Link>
+        {/* Back link and search */}
+        <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <Link
+            href="/drug"
+            className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.22em] text-slate-500 transition-colors hover:text-teal-300"
+          >
+            <ArrowLeft size={14} /> Back to drug list
+          </Link>
+          <div ref={searchWrapperRef} className="relative w-full sm:w-72">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" aria-hidden />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setShowSearchDropdown(true);
+              }}
+              onFocus={() => hasSearchResults && setShowSearchDropdown(true)}
+              onKeyDown={handleSearchKeyDown}
+              placeholder="Search diseases or drugs…"
+              className="w-full rounded-lg border border-slate-700 bg-slate-900/80 py-2 pl-9 pr-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-400"
+              aria-label="Search diseases or drugs"
+            />
+            {showSearchDropdown && (searchDrugs.length > 0 || searchDiseasesList.length > 0 || searchQuery.trim()) && (
+              <div className="absolute left-0 top-full z-50 mt-1 w-full rounded-xl border border-slate-800 bg-slate-950/95 py-2 shadow-xl backdrop-blur">
+                <div className="max-h-56 overflow-y-auto">
+                  {searchDrugs.length > 0 && (
+                    <div className="px-2 py-1">
+                      <p className="mb-1 px-2 text-[10px] font-mono uppercase tracking-[0.2em] text-slate-500">Drugs</p>
+                      {searchDrugs.slice(0, 6).map((d, idx) => (
+                        <Link
+                          key={`drug-${d.id}-${idx}`}
+                          href={`/drug/${d.id}`}
+                          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-200 hover:bg-slate-800/80"
+                          onClick={() => setShowSearchDropdown(false)}
+                        >
+                          <FlaskConical className="h-4 w-4 text-teal-400/80" />
+                          {d.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                  {searchDiseasesList.length > 0 && (
+                    <div className="px-2 py-1">
+                      <p className="mb-1 px-2 text-[10px] font-mono uppercase tracking-[0.2em] text-slate-500">Diseases</p>
+                      {searchDiseasesList.slice(0, 6).map((d, idx) => (
+                        <Link
+                          key={`disease-${d.id}-${idx}`}
+                          href={`/disease-portal/${d.id}`}
+                          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-200 hover:bg-slate-800/80"
+                          onClick={() => setShowSearchDropdown(false)}
+                        >
+                          <Activity className="h-4 w-4 text-cyan-400/80" />
+                          {d.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                  {searchQuery.trim() && (
+                    <div className="border-t border-slate-800 px-2 py-2">
+                      <Link
+                        href={`/disease-portal/${slugify(searchQuery.trim())}`}
+                        className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-teal-200 hover:bg-slate-800/80"
+                        onClick={() => setShowSearchDropdown(false)}
+                      >
+                        <Activity className="h-4 w-4 text-teal-400/80" />
+                        View profile for &quot;{searchQuery.trim()}&quot;
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
 
         {deepError && (
           <div className="mb-6 rounded-xl border border-red-500/40 bg-red-950/30 p-4 flex items-center justify-between gap-4">
@@ -562,20 +696,32 @@ function DrugProfilePageClient({ params }: { params: Promise<{ id: string }> }) 
             </div>
           </div>
 
-          {/* Evidence Count Summary - Tier 1 (Build) */}
+          {/* Evidence Count Summary - Tier 1 (Build) - clickable to scroll to section */}
           <div className="mt-6 grid grid-cols-3 gap-4 rounded-xl border border-slate-800/50 bg-slate-900/40 p-4">
-            <div className="text-center">
+            <button
+              type="button"
+              onClick={() => scrollToSection("approved")}
+              className="flex flex-col items-center rounded-lg py-2 transition-colors hover:bg-emerald-950/40 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+            >
               <p className="text-2xl font-semibold text-emerald-400">{approvedCount}</p>
               <p className="mt-1 text-xs font-mono uppercase tracking-[0.2em] text-slate-400">Approved</p>
-            </div>
-            <div className="text-center">
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollToSection("supportive")}
+              className="flex flex-col items-center rounded-lg py-2 transition-colors hover:bg-cyan-950/40 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+            >
               <p className="text-2xl font-semibold text-cyan-400">{supportiveCount}</p>
               <p className="mt-1 text-xs font-mono uppercase tracking-[0.2em] text-slate-400">Supportive</p>
-            </div>
-            <div className="text-center">
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollToSection("investigational")}
+              className="flex flex-col items-center rounded-lg py-2 transition-colors hover:bg-amber-950/40 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+            >
               <p className="text-2xl font-semibold text-amber-400">{investigationalCount}</p>
               <p className="mt-1 text-xs font-mono uppercase tracking-[0.2em] text-slate-400">Investigational</p>
-            </div>
+            </button>
           </div>
 
           {/* Approved Indications */}
@@ -586,12 +732,13 @@ function DrugProfilePageClient({ params }: { params: Promise<{ id: string }> }) 
             </div>
             <div className="flex flex-wrap gap-2">
               {(deepData?.snapshot?.primaryApprovedIndications?.length ? deepData.snapshot.primaryApprovedIndications : drug.approvedUses).map((use: string, idx: number) => (
-                <span
+                <Link
                   key={idx}
-                  className="inline-flex items-center rounded-full bg-emerald-950/40 px-3 py-1 text-xs font-medium text-emerald-300 ring-1 ring-emerald-800/50"
+                  href={`/disease-portal/${slugify(use)}`}
+                  className="inline-flex items-center rounded-full bg-emerald-950/40 px-3 py-1 text-xs font-medium text-emerald-300 ring-1 ring-emerald-800/50 transition-colors hover:bg-emerald-900/50 hover:text-emerald-200"
                 >
                   {use}
-                </span>
+                </Link>
               ))}
             </div>
           </div>
@@ -872,6 +1019,52 @@ function DrugProfilePageClient({ params }: { params: Promise<{ id: string }> }) 
             <p className="mt-2 text-xs leading-relaxed text-slate-500">
               <strong className="text-slate-400">Deep Research:</strong> This profile is generated by AI (GPT) for research support only. Not clinical advice.
             </p>
+          </div>
+        </section>
+
+        {/* Community support groups */}
+        <section
+          id="community"
+          ref={(el) => {
+            sectionRefs.current.community = el;
+          }}
+          className="mt-8 rounded-2xl border border-slate-800/80 bg-slate-950/60 p-6 shadow-[0_26px_90px_rgba(15,23,42,0.9)]"
+        >
+          <div className="mb-4 flex items-center gap-2">
+            <Users className="text-teal-400" size={18} />
+            <h3 className="text-sm font-semibold text-slate-200">Community Support Groups</h3>
+          </div>
+          <p className="mb-4 text-sm leading-relaxed text-slate-400">
+            Patient and caregiver communities related to {drug.name} and its indications. These resources are for informational support only and do not replace medical advice.
+          </p>
+          <div className="space-y-3">
+            <a
+              href="https://www.patientslikeme.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 rounded-lg border border-slate-800/80 bg-slate-900/40 px-4 py-3 text-sm text-slate-200 transition-colors hover:border-teal-500/40 hover:bg-slate-800/60"
+            >
+              <ExternalLink size={14} className="text-teal-400/80" />
+              PatientsLikeMe — condition-specific communities
+            </a>
+            <a
+              href="https://www.healthunlocked.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 rounded-lg border border-slate-800/80 bg-slate-900/40 px-4 py-3 text-sm text-slate-200 transition-colors hover:border-teal-500/40 hover:bg-slate-800/60"
+            >
+              <ExternalLink size={14} className="text-teal-400/80" />
+              HealthUnlocked — drug and condition forums
+            </a>
+            <a
+              href="https://www.reddit.com/r/AskDocs"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 rounded-lg border border-slate-800/80 bg-slate-900/40 px-4 py-3 text-sm text-slate-200 transition-colors hover:border-teal-500/40 hover:bg-slate-800/60"
+            >
+              <ExternalLink size={14} className="text-teal-400/80" />
+              r/AskDocs — general medical Q&A (not a substitute for your doctor)
+            </a>
           </div>
         </section>
       </div>
