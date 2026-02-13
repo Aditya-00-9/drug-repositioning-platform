@@ -70,9 +70,10 @@ export default function DiseasePortal() {
 
           <div className="divide-y divide-slate-900/80">
             {diseases.map((disease, idx) => (
-              <div
+              <Link
                 key={`${disease.id}-${idx}`}
-                className="grid grid-cols-[1.2fr,1fr,1fr,0.8fr] items-center gap-4 px-6 py-4 hover:bg-slate-900/60"
+                href={`/disease-portal/${disease.id}`}
+                className="grid grid-cols-[1.2fr,1fr,1fr,0.8fr] items-center gap-4 px-6 py-4 transition-colors hover:bg-slate-900/60"
               >
                 <div className="flex items-center gap-3">
                   <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900 text-teal-300 ring-1 ring-slate-700/80">
@@ -110,14 +111,11 @@ export default function DiseasePortal() {
                 </div>
 
                 <div className="flex justify-end">
-                  <Link
-                    href={`/disease-portal/${disease.id}`}
-                    className="rounded-full bg-slate-900 px-3 py-1 text-[11px] font-mono uppercase tracking-[0.22em] text-slate-200 ring-1 ring-slate-700/80 hover:bg-slate-800 hover:text-teal-200"
-                  >
+                  <span className="rounded-full bg-slate-900 px-3 py-1 text-[11px] font-mono uppercase tracking-[0.22em] text-slate-200 ring-1 ring-slate-700/80">
                     Open profile →
-                  </Link>
+                  </span>
                 </div>
-              </div>
+              </Link>
             ))}
 
             {diseases.length === 0 && (

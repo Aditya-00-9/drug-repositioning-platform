@@ -29,19 +29,13 @@ export default function RootLayout({
                 <span className="text-xs font-semibold tracking-[0.18em] uppercase text-slate-100">
                   Repositioning Intelligence
                 </span>
-                <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-slate-500">
+                <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-slate-300">
                   Drug Repurposing Research Platform
                 </span>
               </div>
             </Link>
 
             <nav className="flex items-center gap-6 text-[11px] font-medium uppercase tracking-[0.2em] text-slate-400">
-              <Link
-                href="/"
-                className="transition-colors hover:text-teal-300/90"
-              >
-                Home
-              </Link>
               <Link
                 href="/drug"
                 className="transition-colors hover:text-teal-300/90"

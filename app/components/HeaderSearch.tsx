@@ -87,8 +87,8 @@ export default function HeaderSearch() {
           }}
           onFocus={() => hasResults && setShowDropdown(true)}
           onKeyDown={handleKeyDown}
-          placeholder="Search approved drugs or any disease…"
-          className="w-56 rounded-lg border border-slate-700 bg-slate-900/80 py-1.5 pl-9 pr-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-400"
+          placeholder="Search drugs or diseases…"
+          className="w-72 rounded-lg border border-slate-700 bg-slate-900/80 py-1.5 pl-9 pr-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-400"
           aria-label="Search drugs and diseases"
         />
       </div>
