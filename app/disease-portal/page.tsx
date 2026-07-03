@@ -6,6 +6,7 @@ import { useState } from "react";
 import { searchDiseases } from "../data/pipeline";
 import { slugify } from "../utils/slug";
 import type { DiseaseProfile } from "../data/types";
+import MedicalDisclaimer from "../components/MedicalDisclaimer";
 
 export default function DiseasePortal() {
   const [query, setQuery] = useState("");
@@ -40,6 +41,8 @@ export default function DiseasePortal() {
             Prototype view. Disease list and evidence are manually curated and
             incomplete.
           </p>
+
+          <MedicalDisclaimer className="max-w-xl" />
         </div>
 
         <div className="mb-8 flex flex-wrap items-center gap-3">
@@ -132,6 +135,10 @@ export default function DiseasePortal() {
                 )}
               </div>
             )}
+          </div>
+
+          <div className="border-t border-slate-800/80 p-6">
+            <MedicalDisclaimer />
           </div>
         </div>
       </div>

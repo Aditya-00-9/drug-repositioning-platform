@@ -1,5 +1,6 @@
 "use client";
 
+import MedicalDisclaimer from "./components/MedicalDisclaimer";
 import PortalCard from "./components/PortalCard";
 
 export default function HomePage() {
@@ -35,6 +36,8 @@ export default function HomePage() {
               disease, and target spaces—designed for hypothesis generation,
               portfolio triage, and mechanistic insight at scale.
             </p>
+
+            <MedicalDisclaimer className="mt-6 max-w-lg" variant="light" />
 
             <div className="mt-10 flex flex-col gap-6 sm:flex-row sm:items-center sm:gap-10">
               <div className="flex items-center gap-4">
@@ -118,6 +121,8 @@ export default function HomePage() {
                 </span>
                 <span>Top decile · Signal-to-noise filtered</span>
               </div>
+
+              <MedicalDisclaimer className="mt-4" variant="light" />
             </div>
           </div>
         </div>

@@ -1,5 +1,7 @@
 "use client";
 
+import MedicalDisclaimer from "./MedicalDisclaimer";
+
 export type DeepResearchSnapshot = {
   drugClass: string | null;
   primaryApprovedIndications: string[];
@@ -90,6 +92,8 @@ export default function DeepResearchPanel({
             Close
           </button>
         </div>
+
+        <MedicalDisclaimer className="mb-4" />
 
         {loading && (
           <div className="mt-4 space-y-3 text-xs text-slate-400">
@@ -226,6 +230,7 @@ export default function DeepResearchPanel({
                   <p><span className="font-semibold">Interpretation warnings:</span> {data.confidenceAndCaveats.interpretationWarnings}</p>
                 </div>
                 <p className="mt-3 text-[10px] text-amber-200/80">Research-only intelligence. Not treatment guidance.</p>
+                <MedicalDisclaimer className="mt-3" />
               </section>
             )}
 
@@ -235,6 +240,8 @@ export default function DeepResearchPanel({
                 {!data.dataSources?.length ? "Sources not explicitly listed." : data.dataSources.join(" · ")}
               </p>
             </section>
+
+            <MedicalDisclaimer />
           </div>
         )}
       </aside>

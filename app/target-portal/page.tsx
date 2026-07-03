@@ -5,6 +5,7 @@ import { ArrowLeft, Target } from "lucide-react";
 import { useState } from "react";
 import { searchTargets } from "../data/pipeline";
 import type { TargetProfile } from "../data/types";
+import MedicalDisclaimer from "../components/MedicalDisclaimer";
 
 export default function TargetPortal() {
   const [query, setQuery] = useState("");
@@ -38,6 +39,8 @@ export default function TargetPortal() {
             Prototype view. Target list and evidence are manually curated and
             incomplete.
           </p>
+
+          <MedicalDisclaimer className="max-w-xl" />
         </div>
 
         <div className="mb-8 max-w-md">
@@ -114,6 +117,10 @@ export default function TargetPortal() {
                 No targets match your search.
               </div>
             )}
+          </div>
+
+          <div className="border-t border-slate-800/80 p-6">
+            <MedicalDisclaimer />
           </div>
         </div>
       </div>

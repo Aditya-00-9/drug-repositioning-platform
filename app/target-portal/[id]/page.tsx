@@ -16,6 +16,7 @@ import {
 import { getTargetById } from "../../data/pipeline";
 import type { TargetProfile, EvidenceRecord, EvidenceTier } from "../../data/types";
 import { use, useState } from "react";
+import MedicalDisclaimer from "../../components/MedicalDisclaimer";
 
 function getEvidenceStrength(tier: EvidenceTier, quality?: string): "High" | "Medium" | "Low" {
   if (tier === "Approved") return "High";
@@ -124,6 +125,7 @@ function EvidenceSection({
               );
             })}
           </div>
+          <MedicalDisclaimer className="mt-4" />
         </div>
       )}
     </section>
@@ -275,6 +277,7 @@ function TargetProfilePageClient({ params }: { params: Promise<{ id: string }> }
               ))}
             </div>
           </div>
+          <MedicalDisclaimer className="mt-6" />
         </section>
 
         {/* Evidence by tier */}
@@ -327,6 +330,7 @@ function TargetProfilePageClient({ params }: { params: Promise<{ id: string }> }
             <h2 className="text-lg font-semibold text-slate-50">Evidence Summary</h2>
           </div>
           <p className="leading-relaxed text-slate-300">{target.summary}</p>
+          <MedicalDisclaimer className="mt-4" />
         </section>
 
         {/* Sources */}
@@ -342,6 +346,7 @@ function TargetProfilePageClient({ params }: { params: Promise<{ id: string }> }
             <p className="mt-4 text-xs text-slate-500">
               Last updated: <span className="font-mono">{target.lastUpdated}</span>
             </p>
+            <MedicalDisclaimer className="mt-4" />
           </div>
         </section>
       </div>

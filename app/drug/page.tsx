@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowLeft, Beaker } from "lucide-react";
 import { useState, useEffect } from "react";
 import type { DrugProfile } from "../data/types";
+import MedicalDisclaimer from "../components/MedicalDisclaimer";
 
 export default function DrugPortal() {
   const [query, setQuery] = useState("");
@@ -53,6 +54,8 @@ export default function DrugPortal() {
             Prototype view. Drug list and evidence signals are manually curated
             and incomplete.
           </p>
+
+          <MedicalDisclaimer className="max-w-xl" />
         </div>
 
         {/* Search — approved drugs only; click row to open profile */}
@@ -138,6 +141,10 @@ export default function DrugPortal() {
                 No drugs match your search.
               </div>
             )}
+          </div>
+
+          <div className="border-t border-slate-800/80 p-6">
+            <MedicalDisclaimer />
           </div>
         </div>
       </div>
