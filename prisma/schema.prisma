@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Drug {
+  id               String   @id @default(cuid())
+  slug             String   @unique
+  name             String
+  genericName      String
+  brandNames       String
+  mechanism        String
+  primaryIndication String
+  approvalStatus   String
+  atcCode          String?
+  whyThisDrug      String
+  knownRisks       String
+  targetSlugs      String
+  relatedDiseaseSlugs String
+  similarDrugSlugs String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Disease {
+  id               String   @id @default(cuid())
+  slug             String   @unique
+  name             String
+  icd10            String?
+  meshId           String?
+  description      String
+  pathwayClusters  String
+  unmetNeed        String
+  relatedDrugSlugs String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Target {
+  id                  String   @id @default(cuid())
+  slug                String   @unique
+  name                String
+  geneSymbol          String
+  uniprotId           String?
+  description         String
+  pathway             String
+  druggability        String
+  relatedDrugSlugs    String
+  relatedDiseaseSlugs String
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model EvidenceRecord {
+  id                String   @id @default(cuid())
+  slug              String   @unique
+  drugSlug          String
+  diseaseSlug       String
+  targetSlug        String
+  mechanism         String
+  grade             String
+  evidenceTypes     String
+  clinicalTrialIds  String
+  pubmedIds         String
+  phase             String?
+  outcomes          String
+  confidenceScore   Int
+  evidenceLevel     String
+  aiSummary         String
+  aiGeneratedAt     DateTime
+  lastVerified      DateTime
+  lastUpdated       DateTime
+  reviewStage       String
+  citations         String
+  sourcePapers      String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  timestamp DateTime @default(now())
+  action    String
+  actor     String
+  resource  String
+  details   String?
+}
+
+model ReviewQueueItem {
+  id           String   @id @default(cuid())
+  evidenceSlug String
+  stage        String
+  assignedTo   String?
+  notes        String?
+  updatedAt    DateTime @updatedAt
+}
